@@ -1,0 +1,19 @@
+{
+  "name": "monk-backend",
+  "version": "1.0.0",
+  "description": "Backend Assessment Code for SDE-II role in Monk Commerce",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
