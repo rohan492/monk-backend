@@ -76,7 +76,19 @@ const updateSpecificCoupon = async (req, res) => {
 const deleteSpecificCoupon = async (req, res) => {
   const { id } = req.params;
   console.log(id);
-  res.send(`Coupon with ID: ${id} is deleted successfully!`);
+  const deleteQuery = `
+    DELETE FROM coupons WHERE id = $1 RETURNING *
+  `;
+  const result = await sql(deleteQuery, [id]);
+  const deleteLength = result?.length;
+  if (deleteLength === 0) {
+    res.status(404).json({ message: `Coupon with ID: ${id} does not exist!` });
+  } else {
+    res.json({
+      message: `Coupon with ID: ${id} is deleted successfully!`,
+      deleted_coupon: result,
+    });
+  }
 };
 
 export {
