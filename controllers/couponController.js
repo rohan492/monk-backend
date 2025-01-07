@@ -25,69 +25,98 @@ const createNewCoupons = async (req, res) => {
   }
 };
 
-const getAllCoupons = async (req, res) => {
-  const getQuery = `
-    SELECT * FROM coupons ORDER BY id DESC
-  `;
+const getAllCoupons = async (_req, res) => {
+  try {
+    const getQuery = `
+      SELECT * FROM coupons ORDER BY id DESC
+    `;
 
-  const coupons = await sql(getQuery);
+    const coupons = await sql(getQuery);
 
-  res.json(coupons);
+    res.json(coupons);
+  } catch (error) {
+    console.error("Error getting all coupons:", error);
+    res.status(500).send("Error getting all coupons");
+  }
 };
 
 const getSpecificCoupon = async (req, res) => {
-  const { id } = req.params;
-  console.log(id);
-  const searchQuery = `
-    SELECT * FROM coupons WHERE id = $1
-  `;
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const searchQuery = `
+      SELECT * FROM coupons WHERE id = $1
+    `;
 
-  const result = await sql(searchQuery, [id]);
+    const result = await sql(searchQuery, [id]);
 
-  const foundCoupon = result?.[0];
+    const foundCoupon = result?.[0];
 
-  if (foundCoupon) {
-    res.json(foundCoupon);
-  } else {
-    res.status(404).json({ message: `Coupon with ID: ${id} does not exist!` });
+    if (foundCoupon) {
+      res.json(foundCoupon);
+    } else {
+      res
+        .status(404)
+        .json({ message: `Coupon with ID: ${id} does not exist!` });
+    }
+  } catch (error) {
+    console.error("Error getting specific coupon:", error);
+    res.status(500).send("Error getting specific coupon");
   }
 };
 
 const updateSpecificCoupon = async (req, res) => {
-  const { id } = req.params;
-  console.log(id);
-  console.log(req.body);
-  const { type, details } = req.body;
-  const updateQuery = `
-    UPDATE coupons 
-    SET type = $1, details = $2
-    WHERE id = $3
-    RETURNING *
-  `;
-  const result = await sql(updateQuery, [type, details, id]);
-  const updateLength = result?.length;
-  if (updateLength === 0) {
-    res.status(404).json({ message: `Coupon with ID: ${id} does not exist!` });
-  } else {
-    res.json(result);
+  try {
+    const { id } = req.params;
+    console.log(id);
+    console.log(req.body);
+    const { type, details } = req.body;
+    const updateQuery = `
+      UPDATE coupons 
+      SET type = $1, details = $2
+      WHERE id = $3
+      RETURNING *
+    `;
+    const result = await sql(updateQuery, [type, details, id]);
+    const updateLength = result?.length;
+    if (updateLength === 0) {
+      res
+        .status(404)
+        .json({ message: `Coupon with ID: ${id} does not exist!` });
+    } else {
+      res.json({
+        message: `Coupon with ID: ${id} is updated successfully!`,
+        updated_coupon: result,
+      });
+    }
+  } catch (error) {
+    console.error("Error updating specific coupon:", error);
+    res.status(500).send("Error updating specific coupon");
   }
 };
 
 const deleteSpecificCoupon = async (req, res) => {
-  const { id } = req.params;
-  console.log(id);
-  const deleteQuery = `
-    DELETE FROM coupons WHERE id = $1 RETURNING *
-  `;
-  const result = await sql(deleteQuery, [id]);
-  const deleteLength = result?.length;
-  if (deleteLength === 0) {
-    res.status(404).json({ message: `Coupon with ID: ${id} does not exist!` });
-  } else {
-    res.json({
-      message: `Coupon with ID: ${id} is deleted successfully!`,
-      deleted_coupon: result,
-    });
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const deleteQuery = `
+      DELETE FROM coupons WHERE id = $1 RETURNING *
+    `;
+    const result = await sql(deleteQuery, [id]);
+    const deleteLength = result?.length;
+    if (deleteLength === 0) {
+      res
+        .status(404)
+        .json({ message: `Coupon with ID: ${id} does not exist!` });
+    } else {
+      res.json({
+        message: `Coupon with ID: ${id} is deleted successfully!`,
+        deleted_coupon: result,
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting specific coupon:", error);
+    res.status(500).send("Error deleting specific coupon");
   }
 };
 
