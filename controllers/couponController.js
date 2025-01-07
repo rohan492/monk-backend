@@ -27,6 +27,7 @@ const getSpecificCoupon = async (req, res) => {
 const updateSpecificCoupon = async (req, res) => {
   const { id } = req.params;
   console.log(id);
+  console.log(req.body);
   res.send(`Coupon with ID: ${id} is updated`);
 };
 

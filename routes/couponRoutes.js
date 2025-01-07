@@ -6,15 +6,16 @@ import {
   getSpecificCoupon,
   updateSpecificCoupon,
 } from "../controllers/couponController.js";
+import { validateCoupons } from "../middlewares/couponValidationMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", createNewCoupons);
+router.post("/", validateCoupons, createNewCoupons);
 
 router.get("/", getAllCoupons);
 router.get("/:id", getSpecificCoupon);
 
-router.put("/:id", updateSpecificCoupon);
+router.put("/:id", validateCoupons, updateSpecificCoupon);
 
 router.delete("/:id", deleteSpecificCoupon);
 
