@@ -27,7 +27,7 @@ const createNewCoupons = async (req, res) => {
 
 const getAllCoupons = async (req, res) => {
   const getQuery = `
-    SELECT * from coupons ORDER BY id desc
+    SELECT * FROM coupons ORDER BY id DESC
   `;
 
   const result = await sql(getQuery);
@@ -39,10 +39,18 @@ const getAllCoupons = async (req, res) => {
 const getSpecificCoupon = async (req, res) => {
   const { id } = req.params;
   console.log(id);
-  if (id === "234") {
-    res.send("Good");
+  const searchQuery = `
+    SELECT * FROM coupons WHERE id = $1
+  `;
+
+  const result = await sql(searchQuery, [id]);
+
+  const foundCoupon = result?.[0];
+
+  if (foundCoupon) {
+    res.json(foundCoupon);
   } else {
-    res.status(400).json({ message: `${id} is not "234"` });
+    res.status(404).json({ message: `Coupon with ID: ${id} does not exist!` });
   }
 };
 
