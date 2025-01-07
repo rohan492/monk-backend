@@ -35,7 +35,13 @@ const validateCoupons = async (req, res, next) => {
   const { type, details } = req.body;
 
   if (!type || !details) {
-    return customErrorMessages(res, "NO_TYPE_AND_DETAILS");
+    return customErrorMessages(
+      res,
+      "INVALID_KEYS",
+      "'type' & 'details'",
+      null,
+      "Coupons"
+    );
   }
 
   const validCouponTypes = ["cart-wise", "product-wise", "bxgy"];

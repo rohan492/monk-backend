@@ -6,6 +6,7 @@ import "dotenv/config";
 import couponRoutes from "./routes/couponRoutes.js";
 import { applicableCoupons } from "./controllers/applicableCouponsController.js";
 import { applyCoupon } from "./controllers/applyCouponController.js";
+import { validateCartItems } from "./middlewares/cartValidationMiddleware.js";
 
 const app = express();
 const upload = multer();
@@ -22,8 +23,8 @@ app.get("/", (_req, res) => {
 
 app.use("/coupons", couponRoutes);
 
-app.post("/applicable-coupons", applicableCoupons);
-app.post("/apply-coupon/:id", applyCoupon);
+app.post("/applicable-coupons", validateCartItems, applicableCoupons);
+app.post("/apply-coupon/:id", validateCartItems, applyCoupon);
 
 app.listen(PORT || 3000, () => {
   console.log("Listening on PORT: ", PORT);

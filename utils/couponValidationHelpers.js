@@ -2,12 +2,16 @@ const customErrorMessages = (
   res,
   typeOfError,
   required_keys,
-  required_name
+  required_name,
+  inputType
 ) => {
   let errorMessage;
   switch (typeOfError) {
-    case "NO_TYPE_AND_DETAILS":
-      errorMessage = `Coupons must contain a type & relevant details`;
+    case "ARRAY_OF_OBJECTS":
+      errorMessage = `Please provide Cart Items as an Array of Objects`; // Only 1 case for now. Can modularize this too in future
+      break;
+    case "INVALID_KEYS":
+      errorMessage = `${inputType} must contain ${required_keys}`;
       break;
     case "INVALID_COUPON_TYPE":
       errorMessage = `Please provide a valid coupon type. Valid types are 'cart-wise', 'product-wise' and 'bxgy'`;
