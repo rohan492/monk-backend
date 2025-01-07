@@ -26,13 +26,14 @@ const createNewCoupons = async (req, res) => {
 };
 
 const getAllCoupons = async (req, res) => {
-  console.log(req.query);
-  res.send({
-    coupons: [
-      { item: "1", value: "$69" },
-      { item: "2", value: "$420" },
-    ],
-  });
+  const getQuery = `
+    SELECT * from coupons ORDER BY id desc
+  `;
+
+  const result = await sql(getQuery);
+
+  const coupons = result;
+  res.json(coupons);
 };
 
 const getSpecificCoupon = async (req, res) => {

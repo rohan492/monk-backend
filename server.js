@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(upload.none());
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.send(`Hello World! My Super Secret is: ${process.env.SUPER_SECRET}`);
 });
 
