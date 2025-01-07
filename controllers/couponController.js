@@ -30,9 +30,8 @@ const getAllCoupons = async (req, res) => {
     SELECT * FROM coupons ORDER BY id DESC
   `;
 
-  const result = await sql(getQuery);
+  const coupons = await sql(getQuery);
 
-  const coupons = result;
   res.json(coupons);
 };
 
@@ -58,7 +57,20 @@ const updateSpecificCoupon = async (req, res) => {
   const { id } = req.params;
   console.log(id);
   console.log(req.body);
-  res.send(`Coupon with ID: ${id} is updated`);
+  const { type, details } = req.body;
+  const updateQuery = `
+    UPDATE coupons 
+    SET type = $1, details = $2
+    WHERE id = $3
+    RETURNING *
+  `;
+  const result = await sql(updateQuery, [type, details, id]);
+  const updateLength = result?.length;
+  if (updateLength === 0) {
+    res.status(404).json({ message: `Coupon with ID: ${id} does not exist!` });
+  } else {
+    res.json(result);
+  }
 };
 
 const deleteSpecificCoupon = async (req, res) => {
