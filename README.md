@@ -391,3 +391,35 @@ Applies a specific coupon to the cart and returns updated cart details.
 ## Note
 
 - The spelling of the key `repetition_limit` was mistakenly written as `repitition_limit` in the provided examples. For this implementation, the API assumes `repitition_limit` as the valid key. Please ensure consistency in future inputs and configurations.
+
+## Setup and Deployment
+
+### Option 1: Local Deployment
+
+1. Create `.env` file at the root directory similar to `.env.example`
+
+2. Set up PostgreSQL Database
+   - Get a PostgreSQL Database
+   - Replace the DATABASE_URL in .env:
+     ```
+     DATABASE_URL='postgresql://<db_user>:<db_password>@<db_host>/<db_name>?sslmode=require'
+     ```
+   - Use your database credentials in place of the placeholders
+
+3. Build and Run with Docker
+   ```bash
+   # Build Docker image
+   docker build -t monk-backend .
+
+   # Run container
+   docker run -d -p 3001:3001 monk-backend
+   ```
+
+4. Access the API at `http://localhost:3001`
+
+### Option 2: Use Hosted API
+
+If you don't want to set up locally, you can directly access the API hosted at:
+```
+http://13.53.132.132
+```
