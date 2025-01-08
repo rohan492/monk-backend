@@ -2,6 +2,8 @@
 
 ## Backend Assessment Code for SDE-II role at Monk Commerce
 
+API Host: http://13.53.132.132
+
 ### Cases Handled
 
 #### 1. Cart-Wise Coupons
@@ -159,27 +161,8 @@
   - Total Discount (Combination): `33 + 30 = 63`
   - Final Price: `330 - 63 = 267`
 
-**Note**: The combination of discounts is calculated by adding up the individual discounts from different coupon types, yielding the maximum possible total discount for the cart.
-
-### Cases Not Handled (Limitations)
-
-#### 1. Duplicate Product Entries in the Cart
-- **Description**: If the cart contains duplicate entries for the same product, the system will not consolidate them automatically.
-- **Example**:
-  - Cart: 
-    ```json
-    {
-        "items": [
-            { "product_id": 1, "quantity": 6, "price": 50 },
-            { "product_id": 1, "quantity": 7, "price": 50 }
-        ]
-    }
-    ```
-  - Issue: The system treats them as separate items, potentially miscalculating discounts.
-  - Recommendation: Input validation should consolidate such entries.
-
-#### 2. Coupon Stacking
-- **Description**: The API does not support combining discounts from multiple coupon types for the same cart.
+#### 5. Coupon Stacking
+- **Description**: The API supports combining discounts from multiple coupon types for the same cart, maximizing the total discount benefit for the customer.
 - **Example**:
   - Coupons:
     - Cart-Wise: 
@@ -213,89 +196,197 @@
         }
     }
     ```
-  - Issue: Only one coupon is applied, even if both are valid.
+  - Cart-Wise Discount: `10% of 130 = 13`
+  - Product-Wise Discount: `20% of (2 * 50) = 20`
+  - Total Combined Discount: `33`
+  - Final Price: `130 - 33 = 97`
 
-#### 3. Coupon Expiry
-- **Description**: The system does not validate coupon expiration dates or maximum usage limits.
-- **Example**:
-  - Coupon: 
-    ```json
-    { 
-        "type": "cart-wise", 
-        "details": { 
-            "threshold": 100, 
-            "discount": 10, 
-            "expiry": "2023-12-31" 
-        } 
+### API Endpoints
+
+#### /applicable-coupons
+Returns list of applicable coupons for a given cart.
+
+**Example Request:**
+```json
+{
+    "cart": {
+        "items": [
+            {"product_id": 1, "quantity": 6, "price": 50},
+            {"product_id": 2, "quantity": 3, "price": 30},
+            {"product_id": 3, "quantity": 2, "price": 25}
+        ]
     }
-    ```
-  - Cart: 
-    ```json
-    {
+}
+```
+
+**Example Response:**
+```json
+{
+    "applicable_coupons": [
+        {
+            "coupon_id": 1,
+            "type": "cart-wise",
+            "discount": 44
+        },
+        {
+            "coupon_id": 2,
+            "type": "product-wise",
+            "discount": 60
+        },
+        {
+            "coupon_id": 3,
+            "type": "bxgy",
+            "discount": 50
+        }
+    ]
+}
+```
+
+#### /apply-coupon/{id}
+Applies a specific coupon to the cart and returns updated cart details.
+
+**Example Request:**
+```json
+{
+    "cart": {
         "items": [
             {
                 "product_id": 1,
+                "quantity": 6,
+                "price": 50
+            },
+            {
+                "product_id": 2,
+                "quantity": 3,
+                "price": 30
+            },
+            {
+                "product_id": 3,
                 "quantity": 2,
-                "price": 60
+                "price": 25
             }
         ]
     }
-    ```
-  - Issue: Even if the coupon is expired, the system does not reject it.
+}
+```
 
-#### 4. Complex BxGy Scenarios
-- **Description**: Overlapping "buy" or "get" products across multiple coupons are not supported.
-- **Example**:
-  - Coupons:
-    ```json
-    [
-        {
-            "type": "bxgy",
-            "details": {
-                "buy_products": [
-                    {
-                        "product_id": 1,
-                        "quantity": 3
-                    }
-                ],
-                "get_products": [
-                    {
-                        "product_id": 2,
-                        "quantity": 1
-                    }
-                ]
-            }
-        },
-        {
-            "type": "bxgy",
-            "details": {
-                "buy_products": [
-                    {
-                        "product_id": 1,
-                        "quantity": 2
-                    }
-                ],
-                "get_products": [
-                    {
-                        "product_id": 3,
-                        "quantity": 1
-                    }
-                ]
-            }
-        }
-    ]
-    ```
-  - Cart:
-    ```json
-    {
+**Example Response:**
+```json
+{
+    "updated_cart": {
         "items": [
-            { "product_id": 1, "quantity": 5, "price": 50 },
-            { "product_id": 2, "quantity": 1, "price": 30 },
-            { "product_id": 3, "quantity": 1, "price": 25 }
-        ]
+            {
+                "product_id": 1,
+                "quantity": 6,
+                "price": 50,
+                "total_discount": 60
+            },
+            {
+                "product_id": 2,
+                "quantity": 3,
+                "price": 30,
+                "total_discount": 0
+            },
+            {
+                "product_id": 3,
+                "quantity": 4,
+                "price": 25,
+                "total_discount": 50
+            }
+        ],
+        "total_price": 380,
+        "total_discount": 38,
+        "final_price": 342
     }
-    ```
-  - Issue: The system does not prioritize or combine overlapping rules effectively.
+}
+```
+
+### Cases Not Handled (Limitations)
+
+#### 1. Duplicate Product Entries in the Cart
+- **Description**: If the cart contains duplicate entries for the same product, the system will not consolidate them automatically.
+- **Example**:
+  ```json
+  {
+      "items": [
+          { "product_id": 1, "quantity": 6, "price": 50 },
+          { "product_id": 1, "quantity": 7, "price": 50 }
+      ]
+  }
+  ```
+- Issue: The system treats them as separate items, potentially miscalculating discounts.
+- Recommendation: Input validation should consolidate such entries.
+
+#### 2. Coupon Expiry
+- **Description**: The system does not validate coupon expiration dates or maximum usage limits.
+- **Example**:
+  ```json
+  { 
+      "type": "cart-wise", 
+      "details": { 
+          "threshold": 100, 
+          "discount": 10, 
+          "expiry": "2023-12-31" 
+      } 
+  }
+  ```
+- Issue: Even if the coupon is expired, the system does not reject it.
+
+#### 3. Complex BxGy Scenarios
+- **Description**: Overlapping "buy" or "get" products across multiple coupons are not supported.
+- Issue: The system does not prioritize or combine overlapping rules effectively.
+
+#### 4. BxGy Products with Product-Wise Coupons
+- **Description**: The system does not handle cases where products in a BxGy offer also have product-wise coupons.
+- **Example**:
+  ```json
+  {
+      "coupons": [
+          {
+              "type": "bxgy",
+              "details": {
+                  "buy_products": [{"product_id": 1, "quantity": 3}],
+                  "get_products": [{"product_id": 2, "quantity": 1}]
+              }
+          },
+          {
+              "type": "product-wise",
+              "details": {
+                  "product_id": 1,
+                  "discount": 10
+              }
+          }
+      ]
+  }
+  ```
+- Issue: The system doesn't handle the interaction between these discount types.
+
+#### 5. Coupon Combinations Exceeding Total Price
+- **Description**: The system does not handle cases where combined discounts exceed the cart's total price.
+- **Example**:
+  ```json
+  {
+      "cart": {
+          "items": [
+              {"product_id": 1, "quantity": 1, "price": 100}
+          ]
+      },
+      "coupons": [
+          {
+              "type": "cart-wise",
+              "details": {"discount": 60}
+          },
+          {
+              "type": "product-wise",
+              "details": {
+                  "product_id": 1,
+                  "discount": 50
+              }
+          }
+      ]
+  }
+  ```
+- Issue: Combined discount (110) exceeds total price, leading to negative final price.
 
 ## Note
 
