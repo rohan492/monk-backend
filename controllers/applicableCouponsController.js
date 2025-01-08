@@ -12,14 +12,19 @@
     {
       "applicable_coupons": [
         {
-          "coupon_id": 1,
+          "coupon_id": 9,
           "type": "cart-wise",
-          "discount": 40 // 10% of 400
+          "discount": 44
         },
         {
-          "coupon_id": 3,
+          "coupon_id": 10,
+          "type": "product-wise",
+          "discount": 60
+        },
+        {
+          "coupon_id": 11,
           "type": "bxgy",
-          "discount": 50 // Buy 6 of Product X or Y, Get 2 of Product Z Free (2x $25)
+          "discount": 50
         }
       ]
     }
