@@ -2,7 +2,7 @@
 
 ## Backend Assessment Code for SDE-II role at Monk Commerce
 
-API Host: https://monk.rohan-mathur.dev/
+API Host: https://monk.rohan-mathur.dev/ OR https://13.53.132.132/
 
 ### Cases Handled
 
