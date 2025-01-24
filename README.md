@@ -170,7 +170,7 @@ API Host: https://monk.rohan-mathur.dev/ OR https://13.53.132.132/
       {
         "type": "cart-wise",
         "details": {
-            "threshold": 200,
+            "threshold": 100,
             "discount": 10
         }
       }
