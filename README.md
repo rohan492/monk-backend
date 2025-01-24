@@ -374,7 +374,10 @@ Applies a specific coupon to the cart and returns updated cart details.
       "coupons": [
           {
               "type": "cart-wise",
-              "details": {"discount": 60}
+              "details": {
+                "threshold": 50,
+                "discount": 60
+              }
           },
           {
               "type": "product-wise",
@@ -421,5 +424,5 @@ Applies a specific coupon to the cart and returns updated cart details.
 
 If you don't want to set up locally, you can directly access the API hosted at:
 ```
-http://13.53.132.132
+https://monk.rohan-mathur.dev/ OR https://13.53.132.132/
 ```
